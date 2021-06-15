@@ -34,6 +34,9 @@ def keys_handler():
   if keys[pygame.K_RIGHT]==1:
     pmx=pmx+5
 
+def loss():
+  obstx-pmx < pmr and obsty <= pmy <= obsty+obstheight
+
 def render():
   screen.fill((0,0,0))
   pygame.draw.circle(screen,(255,255,0),(pmx,pmy),pmr)
@@ -58,4 +61,5 @@ while True:
   border()
   sleep(0.02)
 
-if obstx-pmx < pmr or 
+if obstx-pmx < pmr and obsty <= pmy <= obsty+obstheight:
+  print('Hai perso💁')
