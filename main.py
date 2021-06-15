@@ -58,4 +58,4 @@ while True:
   border()
   sleep(0.02)
 
-if obstx-pmx < 
+if obstx-pmx < pmr or 
