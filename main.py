@@ -1,10 +1,13 @@
 import pygame
 pygame.init()
 from time import sleep
+from random import randint
 pygame.font.init() 
-myfont = pygame.font.SysFont('Comic Sans MS', 30)
+myfont = pygame.font.SysFont('Press Start 2P', 30)
 screen = pygame.display.set_mode((500,500))
 screen.fill((0,0,0))
+pmxiniz=70
+pmyiniz=250
 pmx=70
 pmy=250
 pmr=30
@@ -15,7 +18,9 @@ obheight=30
 obstx=220
 obsty=100
 obstwidth=60
-obstheight=400
+obstheight=300
+fail=False
+success=False
 pygame.draw.circle(screen,(255,255,0),(pmx,pmy),pmr)
 pygame.draw.rect(screen, (255,0,0), (obx,oby, obwidth,obheight))
 pygame.draw.rect(screen,(255,255,255),(obstx,obsty,obstwidth,obstheight))
@@ -34,14 +39,25 @@ def keys_handler():
   if keys[pygame.K_RIGHT]==1:
     pmx=pmx+5
 
-def loss():
-  obstx-pmx < pmr and obsty <= pmy <= obsty+obstheight
+def loss(pacman,obst):
+  return ((obst[0]-pacman[2]<pacman[0]<obst[0]+obst[2]+pacman[2]) and (obst[1]<pacman[1]<obst[1]+obst[3]) or ((obst[0]<pacman[0]<obst[0]+obst[2]) and (obst[1]-pacman[2]<pacman[1]<obst[1]+obst[3]+pacman[2])))
+
+def win(pacman,ob):
+  return ((ob[0]-pacman[2]<pacman[0]<ob[0]+ob[2]+pacman[2]) and (ob[1]-pacman[2]<pacman[1]<ob[1]+ob[3]+pacman[2]))
 
 def render():
   screen.fill((0,0,0))
   pygame.draw.circle(screen,(255,255,0),(pmx,pmy),pmr)
   pygame.draw.rect(screen, (255,0,0), (obx,oby, obwidth,obheight))
   pygame.draw.rect(screen,(255,255,255),(obstx,obsty,obstwidth,obstheight))
+  if fail==True:
+    screen.fill((0,0,0))
+    textsurface=myfont.render("Hai perso",False,(255,255,255),None)
+    screen.blit(textsurface,(100,240))
+  if success==True:
+    screen.fill((0,0,0))
+    textsurface=myfont.render("Hai vinto",False,(255,255,255),None)
+    screen.blit(textsurface,(100,240))
   pygame.display.flip()
 
 def border():
@@ -55,11 +71,28 @@ def border():
   if pmy==-pmr:
     pmy=500+pmr
 
-while True:
+def next_state():
+  global fail,success
   keys_handler()
-  render()
   border()
-  sleep(0.02)
+  fail=loss((pmx,pmy,pmr),(obstx,obsty,obstwidth,obstheight))
+  success=win((pmx,pmy,pmr),(obx,oby,obwidth,obheight))
 
-if obstx-pmx < pmr and obsty <= pmy <= obsty+obstheight:
-  print('Hai perso💁')
+while True:
+  next_state()
+  render()
+  sleep(0.02)
+  if fail==True:
+    sleep(1.5)
+    pmx=pmxiniz
+    pmy=pmyiniz
+  if success==True:
+    sleep(1.5)
+    pmx=pmxiniz
+    pmy=pmyiniz
+    obx=randint(0,500-obwidth)
+    oby=randint(0,500-obheight)
+    obstx=randint(pmx+pmr+1,500)
+    obsty=randint(pmy+pmr+1,500)
+    obstwidth=randint(10,500-2*pmr)
+    obstheight=randint(10,500-2*pmr)
